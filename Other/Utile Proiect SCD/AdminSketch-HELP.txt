@@ -1,0 +1,13 @@
+Pasi instalare applicatie admin:
+1. despachetati in webapps in tomcat (poate fi acelasi ca si pt aplicatia server)
+2. porniti tomcat-ul
+3. deschideti in browser (testat cu Mozilla Firefox 42.0): http://localhost:8080/AdminSketch/index.html
+
+Pentru editare:
+1. este un proiect IntelliJ IDEA.
+2. puteti modifica js-urile si html-urile fara sa restartati tomcat-ul; daca modificati in .js trebuie sa dati "clear cache" + refresh la browser, pt. a vedea schimbarile.
+3. clear cache: Ctrl+Alt+Del
+refresh: Ctrl+F5
+
+Daca nu este clar ceva, va astept la ore cu intrebari.
+Spor la treaba!
