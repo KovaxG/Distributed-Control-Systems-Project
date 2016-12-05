@@ -1,8 +1,9 @@
-package com.KovaxG.test;
+package src.com.KovaxG.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Calendar;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,17 +17,24 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/Server")
 public class Server extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private DatabaseHandler db;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
     public Server() {
         super();
-        // TODO Auto-generated constructor stub
-    }
+        
+        String connectionString = "jdbc:mysql://localhost:3306/surveillance";
+        String user = "root";
+        String pass = "root";
+        
+        db = new DatabaseHandler(connectionString, user, pass);
+    } // End of Constructor
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * This part will handle the requests comming from the webpage.
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
@@ -34,17 +42,16 @@ public class Server extends HttpServlet {
 		
 		PrintWriter out = response.getWriter();
 		
-		String firstName = request.getParameter("firstname");
-		String secndName = request.getParameter("secndname");
+		out.println("<div>");
+		out.println("Hello, what's up?");
+		out.println("<div>");
 		
-		out.println("<div>");
-		out.println("<p>First Name = " + firstName + "</p>");
-		out.println("<p>Second Name = " + secndName + "</p>");
-		out.println("<div>");
-	}
+		//db.saveLocation(0, "test 1", "test 2", Calendar.getInstance());
+	} // End of doGet(HttpServletRequest, HttpServletResponse)
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * This will handle connections comming from the andriod app.
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		BufferedReader br = request.getReader();
@@ -55,6 +62,7 @@ public class Server extends HttpServlet {
 		
 		PrintWriter pw = response.getWriter();
 		pw.println("Nessage Received. Big Brother is Watching.");
-	}
 
-}
+	} // End of doPost(HttpServletRequest, HttpServletResponse)
+
+} // End of Class Server

@@ -1,4 +1,4 @@
-package com.KovaxG.demo;
+package src.com.KovaxG.demo;
 
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -1,0 +1,52 @@
+package com.KovaxG.test;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DatabaseHandler {
+	private static String DATABASE_DRIVER;
+	private static String DATABASE_URL;
+	private static String USERNAME;
+	private static String PASSWORD;
+	private static String MAX_POOL;
+	
+	private Connection connection;
+	
+	public DatabaseHandler(String connectionString, String user, String password) {
+		DATABASE_DRIVER = "com.mysql.jdbc.Driver";
+		DATABASE_URL = connectionString;
+		USERNAME = user;
+		PASSWORD = password;
+		MAX_POOL = "256";
+	} // End of Constructor
+	
+	public boolean connect() {
+		if (connection == null) {
+			try {
+				Class.forName(DATABASE_DRIVER);
+				connection = DriverManager.getConnection(DATABASE_URL);
+				return true;
+			} catch (ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
+	} // End of connect()
+	
+	public boolean disconnect() {
+		if (connection != null) {
+			try {
+				connection.close();
+				connection = null;
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
+	} // End of disconnect()
+	
+} // End of Class DatabaseHandler
