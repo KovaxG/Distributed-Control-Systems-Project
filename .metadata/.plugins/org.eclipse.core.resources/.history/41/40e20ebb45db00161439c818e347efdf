@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.*;
-
 /**
  * Servlet implementation class Server
  */
@@ -53,25 +51,15 @@ public class Server extends HttpServlet {
 	 * This will handle connections comming from the andriod app.
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Connection established!");
 		BufferedReader br = request.getReader();
 		String line = br.readLine();
 		br.close();
 		
-		try {
-			Gson gson = new GsonBuilder().create();
-			Location loc = gson.fromJson(line, Location.class);
-			
-			System.out.println(loc.longitude);
-		}
-		catch (Exception e) {
-			System.out.println("Gson failed.");
-		}
+		System.out.println(line);
 		
 		PrintWriter pw = response.getWriter();
-		pw.println("Nessage Received. Big Brother is Watching. Is this even real?");
+		pw.println("Nessage Received. Big Brother is Watching.");
 
 	} // End of doPost(HttpServletRequest, HttpServletResponse)
 
 } // End of Class Server
-

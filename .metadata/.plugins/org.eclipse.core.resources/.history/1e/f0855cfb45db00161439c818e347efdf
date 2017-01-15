@@ -53,25 +53,46 @@ public class Server extends HttpServlet {
 	 * This will handle connections comming from the andriod app.
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Connection established!");
 		BufferedReader br = request.getReader();
 		String line = br.readLine();
 		br.close();
 		
-		try {
-			Gson gson = new GsonBuilder().create();
-			Location loc = gson.fromJson(line, Location.class);
-			
-			System.out.println(loc.longitude);
-		}
-		catch (Exception e) {
-			System.out.println("Gson failed.");
-		}
+		Gson gson = new GsonBuilder().create();
+		Location loc = gson.fromJson(line, Location.class);
+		
+		System.out.println(loc.toString());
 		
 		PrintWriter pw = response.getWriter();
-		pw.println("Nessage Received. Big Brother is Watching. Is this even real?");
+		pw.println("Nessage Received. Big Brother is Watching.");
 
 	} // End of doPost(HttpServletRequest, HttpServletResponse)
 
 } // End of Class Server
 
+class Location {
+	public int ID;
+	public String latitude;
+	public String longitude;
+	public Calendar timestamp;
+	
+	public Location(int id, String lat, String lon, Calendar ts) {
+		ID = id;
+		latitude = lat;
+		longitude = lon;
+		timestamp = ts;
+	} // End of Location
+	
+	/// Actually to DIY JSON
+	public String toString() {
+		String json = "{";
+		json += quotes("ID")        + ": " + ID + separator();
+		json += quotes("latitude")  + ": " + quotes(latitude) + separator();
+		json += quotes("longitude") + ": " + quotes(longitude) + separator();
+		json += quotes("timestamp") + ": " + timestamp.getTime().getTime();
+		json += "}";
+		return json;
+	} // End of toString
+	
+	private char separator() {return ',';}
+	private String quotes(String s) {return '\"' + s + '\"';}
+} // End of Class Location
