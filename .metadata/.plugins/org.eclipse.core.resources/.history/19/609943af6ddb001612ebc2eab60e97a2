@@ -1,0 +1,30 @@
+import java.util.Calendar;
+
+public class Location {
+	public int ID;
+	public String latitude;
+	public String longitude;
+	public long timestamp;
+	
+	public Location(int id, String lat, String lon, long ts) {
+		ID = id;
+		latitude = lat;
+		longitude = lon;
+		timestamp = ts;
+	} // End of Location
+	
+	/// Actually to DIY JSON
+	public String toString() {
+		String json = "{";
+		json += quotes("ID")        + ": " + ID + separator();
+		json += quotes("latitude")  + ": " + quotes(latitude) + separator();
+		json += quotes("longitude") + ": " + quotes(longitude) + separator();
+		json += quotes("timestamp") + ": " + timestamp;
+		json += "}";
+		return json;
+	} // End of toString
+	
+	private char separator() {return ',';}
+	private String quotes(String s) {return '\"' + s + '\"';}
+} // End of Class Location
+

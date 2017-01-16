@@ -1,0 +1,188 @@
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+
+import com.mysql.jdbc.Statement;
+import com.mysql.jdbc.ResultSetImpl;
+
+public class DatabaseHandler {
+	private static String DATABASE_DRIVER;
+	private static String DATABASE_URL;
+	private static String USERNAME;
+	private static String PASSWORD;
+	private static String MAX_POOL;
+	
+	private Connection connection;
+	
+	public DatabaseHandler(String connectionString, String user, String password) {
+		DATABASE_DRIVER = "com.mysql.jdbc.Driver";
+		DATABASE_URL = connectionString;
+		USERNAME = user;
+		PASSWORD = password;
+		MAX_POOL = "256";
+	} // End of Constructor
+	
+	public boolean connect() {
+		if (connection == null) {
+			try {
+				Class.forName(DATABASE_DRIVER).newInstance();
+				connection = DriverManager.getConnection(DATABASE_URL, USERNAME, PASSWORD);
+				return true;
+			} catch (ClassNotFoundException | SQLException | InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
+	} // End of connect()
+	
+	/// Save a location to a database.
+	public boolean saveLocation(int id, String latitude, String longitude, Calendar date) {
+		if (!connect()) {
+			System.out.println("Could not open a connection!");
+			return false;
+		}
+		
+		try {
+			Date sqlDate = new Date(date.getTime().getTime());
+			
+			String query = " INSERT INTO locations (id, latitude, longitude, date) VALUES (?, ?, ?, ?)";
+			PreparedStatement preparedStmt;
+			preparedStmt = connection.prepareStatement(query);
+			
+			preparedStmt.setInt    (1, id);
+		    preparedStmt.setString (2, latitude);
+		    preparedStmt.setString (3, longitude);
+		    preparedStmt.setDate   (4, sqlDate);
+		    
+		    preparedStmt.execute();
+		    
+		    disconnect();
+		    
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return false;
+	} // End of saveLocation(int, String, String, Calendar)
+	
+	/// A wrapper function, that allows us to directly input a Location
+	public boolean saveLocation(Location loc) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(loc.getTS());
+		
+		return saveLocation(loc.getID(),
+				            loc.getLat(),
+				            loc.getLon(),
+				            calendar
+				            );
+	} // End of saveLocation
+	
+	/// @param id - returns the locations this user visited
+	public ArrayList<Location> getLocationsForUserId(int id) {
+		ArrayList<Location> list = new ArrayList<Location>();
+		try {
+			java.sql.Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT latitude, longitude, date FROM locations");
+			
+			while (rs.next()) {
+		    	String lat = rs.getString("latitude");
+		    	String lon = rs.getString("longitude");
+		    	int ts = rs.getInt("date");
+		    	list.add(new Location(id, lat, lon, ts));
+			}
+			
+			stmt.close();
+		}
+		catch (Exception e) {System.err.println("Problem getting the data.");}
+		return list;
+	} // End of getLocationsForUserId
+	
+	public boolean disconnect() {
+		if (connection != null) {
+			try {
+				connection.close();
+				connection = null;
+				return true;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
+	} // End of disconnect()
+	
+} // End of Class DatabaseHandler
+
+/*
+ Statement stmt = con.createStatement();
+ResultSet rs = stmt.executeQuery("SELECT a, b, c FROM Table");
+
+while (rs.next()) {
+    int x = rs.getInt("a");
+    String s = rs.getString("b");
+    float f = rs.getFloat("c");
+}
+
+
+
+
+
+import java.sql.*;
+import java.util.Calendar;
+
+/**
+ * A Java MySQL PreparedStatement INSERT example.
+ * Demonstrates the use of a SQL INSERT statement against a
+ * MySQL database, called from a Java program, using a
+ * Java PreparedStatement.
+ * 
+ * Created by Alvin Alexander, http://devdaily.com
+
+public class JavaMysqlPreparedStatementInsertExample
+{
+
+  public static void main(String[] args)
+  {
+    try
+    {
+      // create a mysql database connection
+      String myDriver = "org.gjt.mm.mysql.Driver";
+      String myUrl = "jdbc:mysql://localhost/test";
+      Class.forName(myDriver);
+      Connection conn = DriverManager.getConnection(myUrl, "root", "");
+    
+      // create a sql date object so we can use it in our INSERT statement
+      Calendar calendar = Calendar.getInstance();
+      java.sql.Date startDate = new java.sql.Date(calendar.getTime().getTime());
+
+      // the mysql insert statement
+      String query = " insert into users (first_name, last_name, date_created, is_admin, num_points)"
+        + " values (?, ?, ?, ?, ?)";
+
+      // create the mysql insert preparedstatement
+      PreparedStatement preparedStmt = conn.prepareStatement(query);
+      preparedStmt.setString (1, "Barney");
+      preparedStmt.setString (2, "Rubble");
+      preparedStmt.setDate   (3, startDate);
+      preparedStmt.setBoolean(4, false);
+      preparedStmt.setInt    (5, 5000);
+
+      // execute the preparedstatement
+      preparedStmt.execute();
+      
+      conn.close();
+    }
+    catch (Exception e)
+    {
+      System.err.println("Got an exception!");
+      System.err.println(e.getMessage());
+    }
+  }
+}
+ */ 

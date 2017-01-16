@@ -2,8 +2,13 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
+
+import com.mysql.jdbc.Statement;
+import com.mysql.jdbc.ResultSetImpl;
 
 public class DatabaseHandler {
 	private static String DATABASE_DRIVER;
@@ -36,6 +41,7 @@ public class DatabaseHandler {
 		return false;
 	} // End of connect()
 	
+	/// Save a location to a database.
 	public boolean saveLocation(int id, String latitude, String longitude, Calendar date) {
 		if (!connect()) {
 			System.out.println("Could not open a connection!");
@@ -65,6 +71,44 @@ public class DatabaseHandler {
 		return false;
 	} // End of saveLocation(int, String, String, Calendar)
 	
+	/// A wrapper function, that allows us to directly input a Location
+	public boolean saveLocation(Location loc) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(loc.getTS());
+		
+		return saveLocation(loc.getID(),
+				            loc.getLat(),
+				            loc.getLon(),
+				            calendar
+				            );
+	} // End of saveLocation
+	
+	/// @param id - returns the locations this user visited
+	public ArrayList<Location> getLocationsForUserId(int id) {
+		ArrayList<Location> list = new ArrayList<Location>();
+		
+		if (!connect()) {
+			System.err.println("Could not open a connection!");
+			return list;
+		}
+		
+		try {
+			java.sql.Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT latitude, longitude, date FROM locations");
+			
+			while (rs.next()) {
+		    	String lat = rs.getString("latitude");
+		    	String lon = rs.getString("longitude");
+		    	int ts = rs.getInt("date");
+		    	list.add(new Location(id, lat, lon, ts));
+			}
+			
+			stmt.close();
+		}
+		catch (Exception e) {e.printStackTrace();}
+		return list;
+	} // End of getLocationsForUserId
+	
 	public boolean disconnect() {
 		if (connection != null) {
 			try {
@@ -78,7 +122,6 @@ public class DatabaseHandler {
 		}
 		return false;
 	} // End of disconnect()
-	
 } // End of Class DatabaseHandler
 
 /*
